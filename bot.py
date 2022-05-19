@@ -24,7 +24,7 @@ exchange = ccxt.binance({
 
 def bb_cci_indicator(df):
     """
-    Функция для подсчета значений индикаторов BB и CCI, а также внесения этих значений в dataframe
+    Функция для подсчета значений индикаторов BB и CCI, а также внесения этих значений вв dataframe
     :param df:
     :return:
     """
