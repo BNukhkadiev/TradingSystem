@@ -1,30 +1,18 @@
-import ccxt
 import schedule
-import config
-import ta
 import time
 from datetime import datetime
 import pandas as pd
 from ta.volatility import BollingerBands
 from ta.trend import CCIIndicator
-
-#pd.set_option('display.max_rows', None)
-
-
-Band0 = 100
-Band1 = -100
-in_possition = False
+from trading_system import Band0, Band1, exchange
 
 
-exchange = ccxt.binance({
-    'apiKey': config.BINANCE_API_KEY,
-    'secret': config.BINANCE_SECRET_KEY
-})
+# pd.set_option('display.max_rows', None)
 
 
 def bb_cci_indicator(df):
     """
-    Функция для подсчета значений индикаторов BB и CCI, а также внесения этих значений вв dataframe
+    Функция для подсчета значений индикаторов BB и CCI, а также внесения этих значений в dataframe
     :param df:
     :return:
     """
@@ -96,7 +84,7 @@ def run_bot():
     print(f"Fetching new bars for {datetime.now().isoformat()}")
     bars = exchange.fetch_ohlcv('ETH/USDT', limit=100, timeframe='5m')
     df = pd.DataFrame(bars[:-1], columns=['timestamp',
-                      'open', 'high', 'low', 'close', 'volume'])
+                                          'open', 'high', 'low', 'close', 'volume'])
     df['timestamp'] = pd.to_datetime(
         df['timestamp'], unit='ms') + pd.Timedelta('03:00:00')
     bb_cci_data = bb_cci_indicator(df)
@@ -109,4 +97,3 @@ schedule.every(10).seconds.do(run_bot)
 while True:
     schedule.run_pending()
     time.sleep(1)
-
