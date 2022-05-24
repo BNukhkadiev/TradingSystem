@@ -65,7 +65,8 @@ def check_buy_sell_signals(df):
             print("Sell!")
             in_possition = False
         else:
-            print("Nothing to sell!")
+            print("No"
+                  "thing to sell!")
     if df['in_uptrend'][last_row_index] == 1:
         if not in_possition:
             print("Buy!")
