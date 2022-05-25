@@ -42,6 +42,3 @@ def parrot(message):
     app.send_message(chat_dest, msg)
 
 
-if __name__ == '__main__':
-    app.config['api_key'] = '5266078812:AAHyfXV6usfzkeFQkBzrrg4JgirPZ3TeKQo'
-    app.poll(debug=True)

@@ -93,8 +93,9 @@ def run_bot():
     # print(bb_cci_data)
 
 
-schedule.every(10).seconds.do(run_bot)
+def start_bot():
+    schedule.every(10).seconds.do(run_bot)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

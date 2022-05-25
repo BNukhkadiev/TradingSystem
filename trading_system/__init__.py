@@ -5,17 +5,20 @@ Trading System module
 
 """
 
-
 import ccxt
 from trading_system import config
+from trading_system.telegram import app
 
+app.config['api_key'] = config.TELEGRAM_API_KEY
 Band0 = 100
 Band1 = -100
-in_possition = False
+in_position = False
 
 exchange = ccxt.binance({
     'apiKey': config.BINANCE_API_KEY,
     'secret': config.BINANCE_SECRET_KEY
 })
 
-from trading_system import bot
+app.poll(debug=True)
+
+

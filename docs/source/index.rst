@@ -10,10 +10,11 @@ Welcome to TradingSystem's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+.. include:: trading_system.rst
 
 Indices and tables
 ==================
+
 
 * :ref:`genindex`
 * :ref:`modindex`
