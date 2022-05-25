@@ -1,2 +1,4 @@
+from trading_system import app
+
 if __name__ == "__main__":
-    import trading_system
+    app.poll(debug=True)

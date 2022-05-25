@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 from ta.volatility import BollingerBands
 from ta.trend import CCIIndicator
-from trading_system import Band0, Band1, exchange
+import ccxt
 
 
 # pd.set_option('display.max_rows', None)
@@ -16,7 +16,9 @@ def bb_cci_indicator(df):
     :param df:
     :return:
     """
-
+    Band0 = 100
+    Band1 = -100
+    in_position = False
     buy_signal = False
     # BB_indicator
     bb_ind = BollingerBands(df['close'], 46, 3)
@@ -81,7 +83,7 @@ def run_bot():
     Данная функция вызывается каждые n секунд с помощью модуля schedule
     :return:
     """
-
+    exchange = ccxt.binance({})
     print(f"Fetching new bars for {datetime.now().isoformat()}")
     bars = exchange.fetch_ohlcv('ETH/USDT', limit=100, timeframe='5m')
     df = pd.DataFrame(bars[:-1], columns=['timestamp',
@@ -99,3 +101,32 @@ def start_bot():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+
+def get_ohcv(token_name):
+    exchange = ccxt.binance({})
+    bars = exchange.fetch_ohlcv(f'{token_name}/USDT', limit=24, timeframe='1h')
+    df = pd.DataFrame(bars[:-1], columns=['timestamp',
+                                          'open', 'high', 'low', 'close', 'volume'])
+
+    table = []
+    for idx, row in df.iterrows():
+        table.append(
+            f"{idx} | {pd.to_datetime(row['timestamp'], unit='ms') + pd.Timedelta('03:00:00')} | {row['open']} | {row['high']} | {row['low']} | {row['close']} | {row['volume']}")
+    return table
+
+
+def get_cci(token_name):
+    exchange = ccxt.binance({})
+    bars = exchange.fetch_ohlcv(f'{token_name}/USDT', limit=24, timeframe='1h')
+    df = pd.DataFrame(bars[:-1], columns=['timestamp',
+                                          'open', 'high', 'low', 'close', 'volume'])
+    cci_ind = CCIIndicator(df['high'], df['low'], df['close'], 20)
+    df['cci_indicator'] = cci_ind.cci()
+    df = df[~df['cci_indicator'].isna()]
+    table = []
+
+    for idx, row in df.iterrows():
+        table.append(
+            f"{idx} | {pd.to_datetime(row['timestamp'], unit='ms') + pd.Timedelta('03:00:00')} | {row['cci_indicator']}")
+    return table

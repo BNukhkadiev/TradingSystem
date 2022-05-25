@@ -5,20 +5,9 @@ Trading System module
 
 """
 
-import ccxt
 from trading_system import config
-from trading_system.telegram import app
+from telebot import TeleBot
 
+app = TeleBot(__name__)
 app.config['api_key'] = config.TELEGRAM_API_KEY
-Band0 = 100
-Band1 = -100
-in_position = False
-
-exchange = ccxt.binance({
-    'apiKey': config.BINANCE_API_KEY,
-    'secret': config.BINANCE_SECRET_KEY
-})
-
-app.poll(debug=True)
-
-
+from trading_system import routes
