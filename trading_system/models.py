@@ -3,11 +3,8 @@ import time
 from datetime import datetime
 import pandas as pd
 from ta.volatility import BollingerBands
-from ta.trend import CCIIndicator
+from ta.trend import CCIIndicator, MACD
 import ccxt
-
-
-# pd.set_option('display.max_rows', None)
 
 
 def bb_cci_indicator(df):
@@ -129,4 +126,37 @@ def get_cci(token_name):
     for idx, row in df.iterrows():
         table.append(
             f"{idx} | {pd.to_datetime(row['timestamp'], unit='ms') + pd.Timedelta('03:00:00')} | {row['cci_indicator']}")
+    return table
+
+
+def tr(df):
+    df['previous_close'] = df['close'].shift(1)
+    df['high-low'] = df['high'] - df['low']
+    df['high-pc'] = abs(df['high'] - df['previous_close'])
+    df['low-pc'] = abs(df['low'] - df['previous_close'])
+    tr = df[['high-low', 'high-pc', 'low-pc']].max(axis=1)
+    return tr
+
+
+def get_atr(token_name):
+    exchange = ccxt.binance({})
+    bars = exchange.fetch_ohlcv(f"{token_name}/USDT", limit=25, timeframe='1h')
+    df = pd.DataFrame(bars[:-1], columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+    df['tr'] = tr(df)
+    print(df['tr'])
+    atr = df['tr'].mean()
+    return atr
+
+
+def get_macd(token_name):
+    exchange = ccxt.binance({})
+    bars = exchange.fetch_ohlcv(f'{token_name}/USDT', limit=30, timeframe='1d')
+    df = pd.DataFrame(bars[:-1], columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+    macd_indicator = MACD(df['close'])
+    df['macd'] = macd_indicator.macd()
+    df = df[~df['macd'].isna()]
+    table = []
+    for idx, row in df.iterrows():
+        table.append(
+            f"{pd.to_datetime(row['timestamp'], unit='ms')} | {row['macd']:,.2f}")
     return table
